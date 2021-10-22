@@ -41,38 +41,78 @@ enum class ModifierKey {
 
 /**
  * @brief GLFW window providing callbacks for input and window manipulation.
+ *
+ * A call to initialize is required to setup GLFW and load OpenGL functions.
  */
 class Window {
  public:
   Window(std::size_t width, std::size_t height, std::string title);
   ~Window();
 
+  /**
+   * Setup GLFW window and load OpenGL functions using GLAD.
+   * @return nullopt if nothing went wrong, otherwise a string containing details of the error
+   */
   [[nodiscard]] std::optional<std::string> initialize();
+  /**
+   * Show window and block the current thread. Starts the main loop.
+   */
   void show();
+  /**
+   * Closes the window and stops main loop in the next tick.
+   */
   void close();
 
   [[nodiscard]] std::size_t getWidth() const;
   [[nodiscard]] std::size_t getHeight() const;
   [[nodiscard]] const std::string &getTitle() const;
   [[nodiscard]] GLFWwindow *getWindowHandle() const;
+  /**
+   * Called on window resize.
+   * @param resizeUserCallback
+   */
   void setResizeCallback(std::invocable<std::size_t, std::size_t> auto &&resizeUserCallback) {
     Window::resizeUserCallback = resizeUserCallback;
   }
+  /**
+   * Called on mouse interaction - both down and up. Provides event type, mouse button and location within the window.
+   * @param mouseButtonUserCallback
+   */
   void setMouseButtonCallback(std::invocable<MouseEventType, MouseButton, double, double> auto &&mouseButtonUserCallback) {
     Window::mouseButtonUserCallback = mouseButtonUserCallback;
   }
+  /**
+   * Called for each mouse move. Provides location of the mouse.
+   * @param mouseMoveUserCallback
+   */
   void setMouseMoveCallback(std::invocable<double, double> auto &&mouseMoveUserCallback) {
     Window::mouseMoveUserCallback = mouseMoveUserCallback;
   }
+  /**
+   * Called on mouse wheel interaction. Parameters are delta in x and y axes.
+   * @param mouseWheelUserCallback
+   */
   void setMouseWheelCallback(std::invocable<double, double> auto &&mouseWheelUserCallback) {
     Window::mouseWheelUserCallback = mouseWheelUserCallback;
   }
+  /**
+   * Called on keyboard interaction. Provides info of event type (up/down), keyboard modifiers which were active and key character.
+   * @param keyUserCallback
+   */
   void setKeyCallback(std::invocable<KeyEventType, Flags<ModifierKey>, char> auto &&keyUserCallback) {
     Window::keyUserCallback = keyUserCallback;
   }
+  /**
+   * A function called periodically in each tick.
+   * @param mainLoop
+   */
   void setMainLoop(std::invocable<double> auto &&mainLoop) {
     Window::mainLoop = mainLoop;
   }
+  /**
+   * A predicate to ignore user input. Since imgui manages the interaction itself it can be useful to use this in order to avoid handling the event twice.
+   * @param predicate
+   */
   void setInputIgnorePredicate(std::predicate auto &&predicate) {
     inputIgnorePredicate = predicate;
   }
