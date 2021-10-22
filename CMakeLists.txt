@@ -89,12 +89,12 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${PROJECT_SOURCE_DIR}/src/shaders/triangle_shader.frag"
+        "${PROJECT_SOURCE_DIR}/src/shaders/simple_shader.frag"
         "${PROJECT_SOURCE_DIR}/resources/shaders/triangle_shader.frag")
 
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
-        "${PROJECT_SOURCE_DIR}/src/shaders/triangle_shader.vert"
+        "${PROJECT_SOURCE_DIR}/src/shaders/simple_shader.vert"
         "${PROJECT_SOURCE_DIR}/resources/shaders/triangle_shader.vert")
 
 

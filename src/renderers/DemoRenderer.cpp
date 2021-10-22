@@ -9,13 +9,13 @@ pf::ogl::DemoRenderer::DemoRenderer(const std::filesystem::path &shaderDir) : sh
 }
 
 std::optional<std::string> pf::ogl::DemoRenderer::init() {
-  const auto vertexShaderSrc = readFile(shaderDir / "triangle_shader.vert");
+  const auto vertexShaderSrc = readFile(shaderDir / "simple_shader.vert");
   if (!vertexShaderSrc.has_value()) {
-    return "Could not load 'triangle_shader.vert'";
+    return "Could not load 'simple_shader.vert'";
   }
-  const auto fragmentShaderSrc = readFile(shaderDir / "triangle_shader.frag");
+  const auto fragmentShaderSrc = readFile(shaderDir / "simple_shader.frag");
   if (!fragmentShaderSrc.has_value()) {
-    return "Could not load 'triangle_shader.frag'";
+    return "Could not load 'simple_shader.frag'";
   }
   vertexShader = std::make_shared<Shader>(GL_VERTEX_SHADER, vertexShaderSrc.value());
   fragmentShader = std::make_shared<Shader>(GL_FRAGMENT_SHADER, fragmentShaderSrc.value());

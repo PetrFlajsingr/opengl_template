@@ -5,8 +5,8 @@
 #ifndef OPENGL_TEMPLATE_SRC_RENDERERS_RENDERER_H
 #define OPENGL_TEMPLATE_SRC_RENDERERS_RENDERER_H
 
-#include <string>
 #include <optional>
+#include <string>
 
 namespace pf::ogl {
 

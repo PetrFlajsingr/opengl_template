@@ -20,13 +20,11 @@ inline const float vertices[] = {
     0.5f, 0.5f, 0.0f,
     0.5f, -0.5f, 0.0f,
     -0.5f, -0.5f, 0.0f,
-    -0.5f, 0.5f, 0.0f
-};
+    -0.5f, 0.5f, 0.0f};
 
 inline const unsigned int indices[] = {
     0, 1, 3,
-    1, 2, 3
-};
+    1, 2, 3};
 }// namespace details
 
 class DemoRenderer : public Renderer {
