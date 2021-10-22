@@ -1,4 +1,4 @@
-#include "renderers/TriangleRenderer.h"
+#include "renderers/DemoRenderer.h"
 #include "ui/DemoImGui.h"
 #include "utils/files.h"
 #include <filesystem>
@@ -34,6 +34,7 @@ void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface) 
 
 int main(int argc, char *argv[]) {
   const auto config = loadConfig();
+  const auto resourcesFolder = std::filesystem::path{config["files"]["resources_path"].value<std::string>().value()};
 
   pf::ogl::Window mainWindow{1200, 900, "OpenGL\n"};
   fmt::print("Initializing window and OpenGL\n");
@@ -44,14 +45,16 @@ int main(int argc, char *argv[]) {
   auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), mainWindow.getWindowHandle()};
 
   mainWindow.setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
-  mainWindow.setMouseButtonCallback([](pf::ogl::MouseEventType type, pf::ogl::MouseButton button, double x, double y) {
-    fmt::print("Mouse clicked {} {}: {}x{}\n", magic_enum::enum_name(type), magic_enum::enum_name(button), x, y);
-  });
-  mainWindow.setKeyCallback([](pf::ogl::KeyEventType type, pf::Flags<pf::ogl::ModifierKey>, char ch) {
-    fmt::print("Key event {}: {}\n", magic_enum::enum_name(type), ch);
-  });
+
+
+  pf::ogl::DemoRenderer renderer{resourcesFolder / "shaders"};
+  if (const auto initResult = renderer.init(); initResult.has_value()) {
+    fmt::print(stderr, "Error during initialization: {}\n", initResult.value());
+    return -1;
+  }
 
   mainWindow.setMainLoop([&](auto) {
+    renderer.render();
     demoUI.imguiInterface->render();
   });
 
