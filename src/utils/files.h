@@ -5,8 +5,8 @@
 #ifndef OPENGL_TEMPLATE_SRC_UTILS_FILES_H
 #define OPENGL_TEMPLATE_SRC_UTILS_FILES_H
 
-#include <string>
 #include <filesystem>
+#include <string>
 
 namespace pf {
 
@@ -15,6 +15,6 @@ namespace pf {
  */
 [[nodiscard]] std::filesystem::path getExeFolder();
 
-}
+}// namespace pf
 
 #endif//OPENGL_TEMPLATE_SRC_UTILS_FILES_H

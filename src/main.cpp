@@ -43,7 +43,6 @@ int main(int argc, char *argv[]) {
     fmt::print("Key event {}: {}\n", magic_enum::enum_name(type), ch);
   });
 
-
   mainWindow.setMainLoop([&](auto) {
     demoUI.imguiInterface->render();
   });
