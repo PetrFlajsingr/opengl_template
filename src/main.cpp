@@ -14,6 +14,16 @@ toml::table loadConfig() {
   return toml::parse_file(configPathStr);
 }
 
+void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface) {
+  const auto configPath = pf::getExeFolder() / "config.toml";
+  const auto configPathStr = configPath.string();
+  fmt::print("Saving config file to: '{}'\n", configPathStr);
+  imguiInterface.updateConfig();
+  config.insert_or_assign("imgui", imguiInterface.getConfig());
+  auto ofstream = std::ofstream(configPathStr);
+  ofstream << config;
+}
+
 int main(int argc, char *argv[]) {
   const auto config = loadConfig();
 
@@ -23,6 +33,9 @@ int main(int argc, char *argv[]) {
     fmt::print(stderr, "Error during initialization: {}\n", windowInitResult.value());
     return -1;
   }
+  auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), mainWindow.getWindowHandle()};
+
+  mainWindow.setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
   mainWindow.setMouseButtonUserCallback([](pf::ogl::MouseEventType type, pf::ogl::MouseButton button, double x, double y) {
     fmt::print("Mouse clicked {} {}: {}x{}\n", magic_enum::enum_name(type), magic_enum::enum_name(button), x, y);
   });
@@ -30,7 +43,6 @@ int main(int argc, char *argv[]) {
     fmt::print("Key event {}: {}\n", magic_enum::enum_name(type), ch);
   });
 
-  auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), mainWindow.getWindowHandle()};
 
   mainWindow.setMainLoop([&](auto) {
     demoUI.imguiInterface->render();
@@ -38,5 +50,8 @@ int main(int argc, char *argv[]) {
 
   fmt::print("Starting main loop\n");
   mainWindow.show();
+  fmt::print("Main loop ended\n");
+
+  saveConfig(config, *demoUI.imguiInterface);
   return 0;
 }

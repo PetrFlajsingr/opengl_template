@@ -4,6 +4,7 @@
 
 #include "DemoImGui.h"
 #include <pf_imgui/backends/ImGuiGlfwOpenGLInterface.h>
+#include <pf_imgui/styles/dark.h>
 
 pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandle) {
   using namespace ui::ig;
@@ -15,6 +16,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
       .pathToIconFolder = *config["path_icons"].value<std::string>(),
       .enabledIconPacks = IconPack::FontAwesome5Regular,
       .defaultFontSize = 13.f});
+  setDarkStyle(*imguiInterface);
 
   window1 = &imguiInterface->createWindow("demo_window", "Demo window");
   layout1 = &window1->createChild<BoxLayout>("box_layout_1", LayoutDirection::TopToBottom, Size::Auto(), AllowCollapse::No, Persistent::Yes);
@@ -42,7 +44,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   button2->addClickListener([this] {
     listBox1->setEnabled(listBox1->getEnabled() == Enabled::Yes ? Enabled::No : Enabled::Yes);
   });
-  checkbox1 = &layout1->createChild<Checkbox>("checkbox_1", "Checkbox");
+  checkbox1 = &layout1->createChild<Checkbox>("checkbox_1", "Checkbox", false, Persistent::Yes);
   checkboxLabel = &layout1->createChild<Text>("label1", "Not selected");
   checkbox1->addValueListener([this](auto selected) {
     std::string str{};
@@ -53,7 +55,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
     }
     checkboxLabel->setText(str);
   });
-  radioGroup = &layout1->createChild<RadioGroup>("radio_group1", "Radio group");
+  radioGroup = &layout1->createChild<RadioGroup>("radio_group1", "Radio group", std::vector<RadioButton>{}, std::nullopt, Persistent::Yes);
   radioGroup->addButton("r_btn1", "First");
   radioGroup->addButton("r_btn2", "Second");
   radioGroup->addButton("r_btn3", "Third");
@@ -62,4 +64,6 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   radioGroup->addValueListener([this](const auto &value) {
     radioGroupLabel->setText(std::string{value});
   });
+
+  imguiInterface->setStateFromConfig();
 }

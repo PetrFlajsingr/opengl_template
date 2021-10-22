@@ -89,6 +89,9 @@ void pf::ogl::Window::windowSizeCallback(GLFWwindow *window, int width, int heig
 
 void pf::ogl::Window::mouseButtonCallback(GLFWwindow *window, int button, int action, int mods) {
   auto self = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+  if (self->inputIgnorePredicate()) {
+    return;
+  }
   const auto mouseButton = details::glfwButtonToEvents(button);
   if (!mouseButton.has_value()) { return; }
   const auto eventType = action == GLFW_PRESS ? MouseEventType::Down : MouseEventType::Up;
@@ -99,16 +102,25 @@ void pf::ogl::Window::mouseButtonCallback(GLFWwindow *window, int button, int ac
 
 void pf::ogl::Window::mousePositionCallback(GLFWwindow *window, double xpos, double ypos) {
   auto self = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+  if (self->inputIgnorePredicate()) {
+    return;
+  }
   self->mouseMoveUserCallback(xpos, ypos);
 }
 
 void pf::ogl::Window::mouseWheelCallback(GLFWwindow *window, double xpos, double ypos) {
   auto self = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+  if (self->inputIgnorePredicate()) {
+    return;
+  }
   self->mouseWheelUserCallback(xpos, ypos);
 }
 
 void pf::ogl::Window::keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods) {
   auto self = reinterpret_cast<Window *>(glfwGetWindowUserPointer(window));
+  if (self->inputIgnorePredicate()) {
+    return;
+  }
   const auto eventType = details::glfwKeyEventToEvents(action);
   if (!eventType.has_value()) { return; }
   const auto keyChar = static_cast<char>(key);

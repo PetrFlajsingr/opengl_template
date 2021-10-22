@@ -10,6 +10,9 @@
 
 namespace pf {
 
+/**
+ * @return absolute path to folder of current executable
+ */
 [[nodiscard]] std::filesystem::path getExeFolder();
 
 }

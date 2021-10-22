@@ -5,8 +5,6 @@
 #ifndef OPENGL_TEMPLATE_SRC_UI_WINDOW_H
 #define OPENGL_TEMPLATE_SRC_UI_WINDOW_H
 
-
-
 #include <GLFW/glfw3.h>
 #include <concepts>
 #include <functional>
@@ -70,6 +68,9 @@ class Window {
   void setMainLoop(std::invocable<double> auto &&mainLoop) {
     Window::mainLoop = mainLoop;
   }
+  void setInputIgnorePredicate(std::predicate auto &&predicate) {
+    inputIgnorePredicate = predicate;
+  }
 
  private:
   static void windowSizeCallback(GLFWwindow *window, int width, int height);
@@ -87,7 +88,9 @@ class Window {
   static void keyCallback(GLFWwindow *window, int key, int scancode, int action, int mods);
   std::function<void(KeyEventType, Flags<ModifierKey>, char)> keyUserCallback = [](auto, auto, auto) {};
 
-  std::function<void(double)> mainLoop = [](auto){};
+  std::function<void(double)> mainLoop = [](auto) {};
+
+  std::function<bool()> inputIgnorePredicate = [] { return false; };
 
   std::size_t width;
   std::size_t height;

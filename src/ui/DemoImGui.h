@@ -13,6 +13,9 @@
 
 namespace pf::ogl {
 
+/**
+ * @brief Simple demo UI.
+ */
 class DemoImGui {
  public:
   DemoImGui(const toml::table &config, GLFWwindow *windowHandle);
