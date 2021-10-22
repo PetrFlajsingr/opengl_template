@@ -21,14 +21,12 @@ HunterGate(
 
 project(opengl_template)
 
+
 set(CMAKE_CXX_STANDARD 20)
 
-add_compile_definitions(GLFW_INCLUDE_NONE )
+add_compile_definitions(GLFW_INCLUDE_NONE)
 add_compile_definitions(GLM_FORCE_SWIZZLE)
-
-hunter_add_package(spdlog)
-find_package(spdlog CONFIG REQUIRED)
-add_compile_definitions(SPDLOG_FMT_EXTERNAL)
+add_compile_definitions(FMT_HEADER_ONLY )
 
 find_package(OpenGL REQUIRED)
 
@@ -50,10 +48,28 @@ CPMAddPackage(
         GIT_TAG master
 )
 
-add_library(glad "src/glad.c")
-add_executable(opengl_template src/main.cpp src/ui/Window.cpp src/ui/Window.h)
 
-target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui)
+#add_compile_definitions(SPDLOG_FMT_EXTERNAL)
+#hunter_add_package(spdlog)
+#find_package(spdlog CONFIG REQUIRED)
+
+add_library(glad src/glad.c)
+add_executable(opengl_template
+        src/main.cpp
+        src/ui/Window.cpp
+        src/ui/Window.h
+        src/utils/files.h
+        src/utils/files.cpp
+        src/ui/DemoImGui.cpp
+        src/ui/DemoImGui.h
+        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/ImGuiGlfwOpenGLInterface.cpp
+        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_glfw.cpp
+        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_opengl3.cpp
+        )
+
+
+target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui #fmt::fmt spdlog::spdlog
+        )
 
 if(WIN32)
     add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
@@ -66,3 +82,8 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         "${PROJECT_SOURCE_DIR}/config.toml"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/config.toml)
 
+#get_cmake_property(_variableNames VARIABLES)
+#list (SORT _variableNames)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()

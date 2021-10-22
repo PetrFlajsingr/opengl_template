@@ -93,6 +93,7 @@ void pf::ogl::Window::mouseButtonCallback(GLFWwindow *window, int button, int ac
   if (!mouseButton.has_value()) { return; }
   const auto eventType = action == GLFW_PRESS ? MouseEventType::Down : MouseEventType::Up;
   auto cursorPosition = std::pair<double, double>{};
+  glfwGetCursorPos(window, &cursorPosition.first, &cursorPosition.second);
   self->mouseButtonUserCallback(eventType, mouseButton.value(), cursorPosition.first, cursorPosition.second);
 }
 

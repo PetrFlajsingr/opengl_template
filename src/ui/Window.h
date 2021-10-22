@@ -5,6 +5,8 @@
 #ifndef OPENGL_TEMPLATE_SRC_UI_WINDOW_H
 #define OPENGL_TEMPLATE_SRC_UI_WINDOW_H
 
+
+
 #include <GLFW/glfw3.h>
 #include <concepts>
 #include <functional>
