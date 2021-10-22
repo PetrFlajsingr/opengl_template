@@ -65,7 +65,7 @@ add_executable(opengl_template
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/ImGuiGlfwOpenGLInterface.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_glfw.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_opengl3.cpp
-        )
+        src/renderers/TriangleRenderer.cpp src/renderers/TriangleRenderer.h src/renderers/Renderer.h src/gl/Shader.cpp src/gl/Shader.h)
 
 
 target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui #fmt::fmt spdlog::spdlog
