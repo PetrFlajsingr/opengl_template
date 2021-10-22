@@ -7,6 +7,10 @@
 #include <ui/DemoImGui.h>
 #include <ui/Window.h>
 
+/**
+ * Load toml config located next to the exe - config.toml
+ * @return
+ */
 toml::table loadConfig() {
   const auto configPath = pf::getExeFolder() / "config.toml";
   const auto configPathStr = configPath.string();
@@ -14,6 +18,9 @@ toml::table loadConfig() {
   return toml::parse_file(configPathStr);
 }
 
+/**
+ * Serialize UI, save it to the config and save the config next to the exe into config.toml
+ */
 void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface) {
   const auto configPath = pf::getExeFolder() / "config.toml";
   const auto configPathStr = configPath.string();
@@ -36,10 +43,10 @@ int main(int argc, char *argv[]) {
   auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), mainWindow.getWindowHandle()};
 
   mainWindow.setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
-  mainWindow.setMouseButtonUserCallback([](pf::ogl::MouseEventType type, pf::ogl::MouseButton button, double x, double y) {
+  mainWindow.setMouseButtonCallback([](pf::ogl::MouseEventType type, pf::ogl::MouseButton button, double x, double y) {
     fmt::print("Mouse clicked {} {}: {}x{}\n", magic_enum::enum_name(type), magic_enum::enum_name(button), x, y);
   });
-  mainWindow.setKeyUserCallback([](pf::ogl::KeyEventType type, pf::Flags<pf::ogl::ModifierKey>, char ch) {
+  mainWindow.setKeyCallback([](pf::ogl::KeyEventType type, pf::Flags<pf::ogl::ModifierKey>, char ch) {
     fmt::print("Key event {}: {}\n", magic_enum::enum_name(type), ch);
   });
 

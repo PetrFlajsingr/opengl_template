@@ -27,7 +27,9 @@ enum class MouseEventType {
 enum class KeyEventType { Up = 1 << 0,
                           Pressed = 1 << 1,
                           Repeat = 1 << 2 };
-
+/**
+ * @brief Keyboard modifier/state keys.
+ */
 enum class ModifierKey {
   Shift = 1 << 0,
   Control = 1 << 1,
@@ -37,6 +39,9 @@ enum class ModifierKey {
   NumLock = 1 << 5
 };
 
+/**
+ * @brief GLFW window providing callbacks for input and window manipulation.
+ */
 class Window {
  public:
   Window(std::size_t width, std::size_t height, std::string title);
@@ -50,19 +55,19 @@ class Window {
   [[nodiscard]] std::size_t getHeight() const;
   [[nodiscard]] const std::string &getTitle() const;
   [[nodiscard]] GLFWwindow *getWindowHandle() const;
-  void setResizeUserCallback(std::invocable<std::size_t, std::size_t> auto &&resizeUserCallback) {
+  void setResizeCallback(std::invocable<std::size_t, std::size_t> auto &&resizeUserCallback) {
     Window::resizeUserCallback = resizeUserCallback;
   }
-  void setMouseButtonUserCallback(std::invocable<MouseEventType, MouseButton, double, double> auto &&mouseButtonUserCallback) {
+  void setMouseButtonCallback(std::invocable<MouseEventType, MouseButton, double, double> auto &&mouseButtonUserCallback) {
     Window::mouseButtonUserCallback = mouseButtonUserCallback;
   }
-  void setMouseMoveUserCallback(std::invocable<double, double> auto &&mouseMoveUserCallback) {
+  void setMouseMoveCallback(std::invocable<double, double> auto &&mouseMoveUserCallback) {
     Window::mouseMoveUserCallback = mouseMoveUserCallback;
   }
-  void setMouseWheelUserCallback(std::invocable<double, double> auto &&mouseWheelUserCallback) {
+  void setMouseWheelCallback(std::invocable<double, double> auto &&mouseWheelUserCallback) {
     Window::mouseWheelUserCallback = mouseWheelUserCallback;
   }
-  void setKeyUserCallback(std::invocable<KeyEventType, Flags<ModifierKey>, char> auto &&keyUserCallback) {
+  void setKeyCallback(std::invocable<KeyEventType, Flags<ModifierKey>, char> auto &&keyUserCallback) {
     Window::keyUserCallback = keyUserCallback;
   }
   void setMainLoop(std::invocable<double> auto &&mainLoop) {
