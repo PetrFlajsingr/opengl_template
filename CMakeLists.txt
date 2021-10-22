@@ -54,6 +54,9 @@ CPMAddPackage(
 #find_package(spdlog CONFIG REQUIRED)
 
 add_library(glad src/glad.c)
+
+file(GLOB GEGL_SOURCES src/geGL/*.cpp src/geGL/private/*.cpp)
+
 add_executable(opengl_template
         src/main.cpp
         src/ui/Window.cpp
@@ -65,7 +68,8 @@ add_executable(opengl_template
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/ImGuiGlfwOpenGLInterface.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_glfw.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_opengl3.cpp
-        src/renderers/TriangleRenderer.cpp src/renderers/TriangleRenderer.h src/renderers/Renderer.h src/gl/Shader.cpp src/gl/Shader.h)
+        src/renderers/DemoRenderer.cpp src/renderers/DemoRenderer.h src/renderers/Renderer.h src/geGL/Shader.cpp src/geGL/Shader.h
+        ${GEGL_SOURCES})
 
 
 target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui #fmt::fmt spdlog::spdlog
@@ -81,6 +85,18 @@ add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         "${PROJECT_SOURCE_DIR}/config.toml"
         $<TARGET_FILE_DIR:${PROJECT_NAME}>/config.toml)
+
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${PROJECT_SOURCE_DIR}/src/shaders/triangle_shader.frag"
+        "${PROJECT_SOURCE_DIR}/resources/shaders/triangle_shader.frag")
+
+add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy
+        "${PROJECT_SOURCE_DIR}/src/shaders/triangle_shader.vert"
+        "${PROJECT_SOURCE_DIR}/resources/shaders/triangle_shader.vert")
+
 
 #get_cmake_property(_variableNames VARIABLES)
 #list (SORT _variableNames)

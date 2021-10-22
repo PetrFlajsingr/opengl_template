@@ -15,6 +15,8 @@ namespace pf {
  */
 [[nodiscard]] std::filesystem::path getExeFolder();
 
+[[nodiscard]] std::optional<std::string> readFile(const std::filesystem::path &path);
+
 }// namespace pf
 
 #endif//OPENGL_TEMPLATE_SRC_UTILS_FILES_H
