@@ -1,3 +1,4 @@
+#include "renderers/TriangleRenderer.h"
 #include "ui/DemoImGui.h"
 #include "utils/files.h"
 #include <filesystem>
