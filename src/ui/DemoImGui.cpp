@@ -55,7 +55,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
     }
     checkboxLabel->setText(str);
   });
-  radioGroup = &layout1->createChild<RadioGroup>("radio_group1", "Radio group", std::vector<RadioButton>{}, std::nullopt, Persistent::Yes);
+  radioGroup = &layout1->createChild<RadioGroup>("radio_group1", "Radio group", std::vector<std::unique_ptr<RadioButton>>{}, std::nullopt, Persistent::Yes);
   radioGroup->addButton("r_btn1", "First");
   radioGroup->addButton("r_btn2", "Second");
   radioGroup->addButton("r_btn3", "Third");
