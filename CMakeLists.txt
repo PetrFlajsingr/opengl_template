@@ -42,6 +42,21 @@ CPMAddPackage(
         GIT_TAG master
 )
 
+
+CPMAddPackage(
+        NAME pf_mainloop
+        GITHUB_REPOSITORY PetrFlajsingr/pf_mainloop
+        GIT_TAG master
+)
+
+CPMAddPackage(
+        NAME pf_glfw
+        GITHUB_REPOSITORY PetrFlajsingr/pf_glfw
+        GIT_TAG master
+        OPTIONS "PF_GLFW_OPENGL ON"
+)
+add_compile_definitions(PF_GLFW_OPENGL)
+
 CPMAddPackage(
         NAME pf_imgui
         GITHUB_REPOSITORY PetrFlajsingr/pf_imgui
@@ -59,8 +74,6 @@ file(GLOB GEGL_SOURCES src/geGL/*.cpp src/geGL/private/*.cpp)
 
 add_executable(opengl_template
         src/main.cpp
-        src/ui/Window.cpp
-        src/ui/Window.h
         src/utils/files.h
         src/utils/files.cpp
         src/ui/DemoImGui.cpp
@@ -68,11 +81,14 @@ add_executable(opengl_template
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/ImGuiGlfwOpenGLInterface.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_glfw.cpp
         ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_opengl3.cpp
-        src/renderers/DemoRenderer.cpp src/renderers/DemoRenderer.h src/renderers/Renderer.h src/geGL/Shader.cpp src/geGL/Shader.h
+        src/renderers/DemoRenderer.cpp src/renderers/DemoRenderer.h
+        src/renderers/Renderer.h
+        src/geGL/Shader.cpp
+        src/geGL/Shader.h
         ${GEGL_SOURCES})
 
 
-target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui #fmt::fmt spdlog::spdlog
+target_link_libraries(opengl_template glad glfw ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui pf_mainloop::pf_mainloop pf_glfw::pf_glfw  #fmt::fmt spdlog::spdlog
         )
 
 if(WIN32)

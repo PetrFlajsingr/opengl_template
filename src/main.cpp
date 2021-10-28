@@ -4,9 +4,10 @@
 #include <filesystem>
 #include <fmt/format.h>
 #include <magic_enum.hpp>
+#include <pf_glfw/GLFW.h>
+#include <pf_mainloop/MainLoop.h>
 #include <toml++/toml.h>
 #include <ui/DemoImGui.h>
-#include <ui/Window.h>
 
 /**
  * Load toml config located next to the exe - config.toml
@@ -36,16 +37,22 @@ int main(int argc, char *argv[]) {
   const auto config = loadConfig();
   const auto resourcesFolder = std::filesystem::path{config["files"]["resources_path"].value<std::string>().value()};
 
-  pf::ogl::Window mainWindow{1200, 900, "OpenGL\n"};
   fmt::print("Initializing window and OpenGL\n");
-  if (auto windowInitResult = mainWindow.initialize(); windowInitResult.has_value()) {
-    fmt::print(stderr, "Error during initialization: {}\n", windowInitResult.value());
+  pf::glfw::GLFW glfw{};
+  auto window = glfw.createWindow({.width = 1200,
+                                   .height = 900,
+                                   .title = "OpenGL",
+                                   .majorOpenGLVersion = 4,
+                                   .minorOpenGLVersion = 6});
+  window->setCurrent();
+  if (!gladLoadGLLoader((GLADloadproc) glfw.getLoaderFnc())) {
+    fmt::print(stderr, "Error while initializing GLAD");
     return -1;
   }
-  auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), mainWindow.getWindowHandle()};
 
-  mainWindow.setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
+  auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), window->getHandle()};
 
+  window->setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
 
   pf::ogl::DemoRenderer renderer{resourcesFolder / "shaders"};
   if (const auto initResult = renderer.init(); initResult.has_value()) {
@@ -53,13 +60,29 @@ int main(int argc, char *argv[]) {
     return -1;
   }
 
-  mainWindow.setMainLoop([&](auto) {
+  window->setMouseClickCallback([&](pf::glfw::MouseButton btn, pf::Flags<pf::glfw::ModifierKey> mods) {
+    std::string txt = fmt::format("Clicked {} button", magic_enum::enum_name(btn));
+    if (mods.is(pf::glfw::ModifierKey::Shift)) {
+      txt += " with shift";
+    }
+    if (mods.is(pf::glfw::ModifierKey::Control)) {
+      txt += " with Control";
+    }
+    demoUI.imguiInterface->showNotification(pf::ui::ig::NotificationType::Info, txt);
+  });
+
+  pf::MainLoop::Get()->setOnMainLoop([&](auto) {
+    if (window->shouldClose()) {
+      pf::MainLoop::Get()->stop();
+    }
     renderer.render();
     demoUI.imguiInterface->render();
+    window->swapBuffers();
+    glfw.pollEvents();
   });
 
   fmt::print("Starting main loop\n");
-  mainWindow.show();
+  pf::MainLoop::Get()->run();
   fmt::print("Main loop ended\n");
 
   saveConfig(config, *demoUI.imguiInterface);
