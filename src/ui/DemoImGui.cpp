@@ -5,6 +5,7 @@
 #include "DemoImGui.h"
 #include <pf_imgui/backends/ImGuiGlfwOpenGLInterface.h>
 #include <pf_imgui/styles/dark.h>
+#include <pf_mainloop/MainLoop.h>
 
 pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandle) {
   using namespace ui::ig;
@@ -63,6 +64,18 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   radioGroupLabel = &layout1->createChild<Text>("label3", "Not selected");
   radioGroup->addValueListener([this](const auto &value) {
     radioGroupLabel->setText(std::string{value});
+  });
+  tabBar = &layout1->createChild<TabBar>("tabbar_1", true);
+  plusTabBtn = &tabBar->addTabButton("plus_tab_btn", "+", TabMod::ForceRight);
+  tab1 = &tabBar->addTab("tab_1_1", "Tab 1", TabMod::DisplayDot, true);
+  tab2 = &tabBar->addTab("tab_1_2", "Tab 2", Flags<TabMod>{}, true);
+  tab3 = &tabBar->addTab("tab_1_3", "Tab 3", Flags<TabMod>{}, true);
+  tabBtn1 = &tabBar->addTabButton("tab_btn1", "Tab button");
+
+  plusTabBtn->addClickListener([&] {
+    pf::MainLoop::Get()->forceEnqueue([&] {
+      tabBar->addTab(uniqueId(), uniqueId());
+    });
   });
 
   imguiInterface->setStateFromConfig();

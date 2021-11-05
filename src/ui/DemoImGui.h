@@ -31,6 +31,12 @@ class DemoImGui {
       ui::ig::Text *checkboxLabel;
       ui::ig::RadioGroup *radioGroup;
       ui::ig::Text *radioGroupLabel;
+      ui::ig::TabBar *tabBar;
+        ui::ig::TabButton *plusTabBtn;
+        ui::ig::Tab *tab1;
+        ui::ig::Tab *tab2;
+        ui::ig::Tab *tab3;
+        ui::ig::TabButton *tabBtn1;
 
   // clang-format on
 
