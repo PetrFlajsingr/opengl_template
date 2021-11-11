@@ -23,12 +23,15 @@ toml::table loadConfig() {
 /**
  * Serialize UI, save it to the config and save the config next to the exe into config.toml
  */
-void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface) {
+void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface, const std::shared_ptr<pf::glfw::Window> &window) {
   const auto configPath = pf::getExeFolder() / "config.toml";
   const auto configPathStr = configPath.string();
   fmt::print("Saving config file to: '{}'\n", configPathStr);
   imguiInterface.updateConfig();
   config.insert_or_assign("imgui", imguiInterface.getConfig());
+  const auto &[width, height] = window->getSize();
+  config["window"].as_table()->insert_or_assign("width", width);
+  config["window"].as_table()->insert_or_assign("height", height);
   auto ofstream = std::ofstream(configPathStr);
   ofstream << config;
 }
@@ -39,8 +42,8 @@ int main(int argc, char *argv[]) {
 
   fmt::print("Initializing window and OpenGL\n");
   pf::glfw::GLFW glfw{};
-  auto window = glfw.createWindow({.width = 1200,
-                                   .height = 900,
+  auto window = glfw.createWindow({.width = static_cast<std::size_t>(config["window"]["width"].value_or(1200)),
+                                   .height = static_cast<std::size_t>(config["window"]["width"].value_or(900)),
                                    .title = "OpenGL",
                                    .majorOpenGLVersion = 4,
                                    .minorOpenGLVersion = 6});
@@ -85,6 +88,6 @@ int main(int argc, char *argv[]) {
   pf::MainLoop::Get()->run();
   fmt::print("Main loop ended\n");
 
-  saveConfig(config, *demoUI.imguiInterface);
+  saveConfig(config, *demoUI.imguiInterface, window);
   return 0;
 }

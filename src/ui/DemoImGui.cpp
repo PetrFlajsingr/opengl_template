@@ -12,7 +12,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   imguiInterface = std::make_unique<ImGuiGlfwOpenGLInterface>(ImGuiGlfwOpenGLConfig{
       .windowHandle = windowHandle,
       .flags = {},
-      .enableMultiViewport = true,
+      .enableMultiViewport = false,
       .config = config,
       .pathToIconFolder = *config["path_icons"].value<std::string>(),
       .enabledIconPacks = IconPack::FontAwesome5Regular,
