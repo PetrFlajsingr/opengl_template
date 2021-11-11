@@ -43,7 +43,7 @@ int main(int argc, char *argv[]) {
   fmt::print("Initializing window and OpenGL\n");
   pf::glfw::GLFW glfw{};
   auto window = glfw.createWindow({.width = static_cast<std::size_t>(config["window"]["width"].value_or(1200)),
-                                   .height = static_cast<std::size_t>(config["window"]["width"].value_or(900)),
+                                   .height = static_cast<std::size_t>(config["window"]["height"].value_or(900)),
                                    .title = "OpenGL",
                                    .majorOpenGLVersion = 4,
                                    .minorOpenGLVersion = 6});
