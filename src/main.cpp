@@ -55,15 +55,14 @@ int main(int argc, char *argv[]) {
 
   auto demoUI = pf::ogl::DemoImGui{*config["imgui"].as_table(), window->getHandle()};
 
-  window->setInputIgnorePredicate([&] { return demoUI.imguiInterface->isWindowHovered() || demoUI.imguiInterface->isKeyboardCaptured(); });
-
   pf::ogl::DemoRenderer renderer{resourcesFolder / "shaders"};
   if (const auto initResult = renderer.init(); initResult.has_value()) {
     fmt::print(stderr, "Error during initialization: {}\n", initResult.value());
     return -1;
   }
 
-  window->setMouseClickCallback([&](pf::glfw::MouseButton btn, pf::Flags<pf::glfw::ModifierKey> mods) {
+  window->setMouseButtonCallback([&](pf::glfw::MouseButton btn, pf::glfw::ButtonState state, pf::Flags<pf::glfw::ModifierKey> mods) {
+    if (state == pf::glfw::ButtonState::Down) { return; }
     std::string txt = fmt::format("Clicked {} button", magic_enum::enum_name(btn));
     if (mods.is(pf::glfw::ModifierKey::Shift)) {
       txt += " with shift";
@@ -71,8 +70,13 @@ int main(int argc, char *argv[]) {
     if (mods.is(pf::glfw::ModifierKey::Control)) {
       txt += " with Control";
     }
-    demoUI.imguiInterface->showNotification(pf::ui::ig::NotificationType::Info, txt);
-  });
+    demoUI.imguiInterface->getNotificationManager()
+        .createNotification(pf::ui::ig::NotificationType::Info,
+                            pf::ui::ig::uniqueId(),
+                            txt)
+        .createChild<pf::ui::ig::Text>(pf::ui::ig::uniqueId(), "Demo notification");
+  },
+                                 true);
 
   pf::MainLoop::Get()->setOnMainLoop([&](auto) {
     if (window->shouldClose()) {
