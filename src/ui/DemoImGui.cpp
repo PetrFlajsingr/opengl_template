@@ -10,13 +10,12 @@
 pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandle) {
   using namespace ui::ig;
   imguiInterface = std::make_unique<ImGuiGlfwOpenGLInterface>(ImGuiGlfwOpenGLConfig{
-      .windowHandle = windowHandle,
-      .flags = {},
-      .enableMultiViewport = false,
-      .config = config,
-      .pathToIconFolder = *config["path_icons"].value<std::string>(),
-      .enabledIconPacks = IconPack::FontAwesome5Regular,
-      .defaultFontSize = 13.f});
+      .imgui{.flags = ui::ig::ImGuiConfigFlags::DockingEnable,
+             .config = config,
+             .iconFontDirectory = *config["path_icons"].value<std::string>(),
+             .enabledIconPacks = IconPack::FontAwesome5Regular,
+             .iconSize = 13.f},
+      .windowHandle = windowHandle});
   setDarkStyle(*imguiInterface);
 
   window1 = &imguiInterface->createWindow("demo_window", "Demo window");
@@ -31,15 +30,20 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   });
   button1 = &layout1->createChild<Button>("button1", "Open file");
   button1->addClickListener([this] {
-    imguiInterface->openFileDialog(
-        "Select a file", {FileExtensionSettings{{"*.txt"}, "text file", ImVec4{1, 0, 0, 1}}}, [this](const auto &files) {
-      std::string str{};
-      for (const auto &file : files) {
-        str += file.string() + '\n';
-      }
-      auto &dialog = imguiInterface->createDialog("dialog1", "Selected Files");
-      dialog.createChild<Text>("dialog_text", "", ImVec4{0, 0, 1, 1}).setText("Selected files:\n{}", str);
-      dialog.createChild<Button>("close_dialog_btn", "Close").addClickListener([&dialog] { dialog.close(); }); }, [] {}, Size{300, 200}, ".", "", Modal::Yes);
+    imguiInterface->buildFileDialog(FileDialogType::File)
+        .label("Select a file")
+        .extension({{"*.txt"}, "text file", ImVec4{1, 0, 0, 1}})
+        .onSelect([this](const auto &files) {
+          std::string str{};
+          for (const auto &file : files) {
+            str += file.string() + '\n';
+          }
+          auto &dialog = imguiInterface->createDialog("dialog1", "Selected Files");
+          dialog.createChild<Text>("dialog_text", "", ImVec4{0, 0, 1, 1}).setText("Selected files:\n{}", str);
+          dialog.createChild<Button>("close_dialog_btn", "Close").addClickListener([&dialog] { dialog.close(); }); })
+        .size({500, 400})
+        .modal()
+        .build();
   });
   button2 = &layout1->createChild<Button>("button2", "Enable/disable listbox");
   button2->addClickListener([this] {
