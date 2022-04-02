@@ -19,7 +19,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   setDarkStyle(*imguiInterface);
 
   window1 = &imguiInterface->createWindow("demo_window", "Demo window");
-  layout1 = &window1->createChild<BoxLayout>("box_layout_1", LayoutDirection::TopToBottom, Size::Auto(), AllowCollapse::No, Persistent::Yes);
+  layout1 = &window1->createChild(BoxLayout::Config{.name = "box_layout_1", .layoutDirection = LayoutDirection::TopToBottom, .size = Size::Auto(), .allowCollapse = AllowCollapse::No, .persistent = Persistent::Yes});
   listBox1 = &layout1->createChild<Listbox<std::string>>("list_box_1", "Listbox", Size::FillWidth(), std::nullopt, Persistent::Yes);
   listboxLabel = &layout1->createChild<Text>("label1", "No selection");
   listBox1->addItem("item1");
@@ -32,14 +32,16 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   button1->addClickListener([this] {
     imguiInterface->buildFileDialog(FileDialogType::File)
         .label("Select a file")
-        .extension({{"*.txt"}, "text file", ImVec4{1, 0, 0, 1}})
+        .extension({{"*.txt"}, "text file", Color::White})
         .onSelect([this](const auto &files) {
           std::string str{};
           for (const auto &file : files) {
             str += file.string() + '\n';
           }
           auto &dialog = imguiInterface->createDialog("dialog1", "Selected Files");
-          dialog.createChild<Text>("dialog_text", "", ImVec4{0, 0, 1, 1}).setText("Selected files:\n{}", str);
+          auto &text = dialog.createChild<Text>("dialog_text", "");
+          text.setText("Selected files:\n{}", str);
+          text.setColor<style::ColorOf::Text>(Color::Blue);
           dialog.createChild<Button>("close_dialog_btn", "Close").addClickListener([&dialog] { dialog.close(); }); })
         .size({500, 400})
         .modal()

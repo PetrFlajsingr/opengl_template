@@ -65,7 +65,9 @@ CPMAddPackage(
         NAME pf_imgui
         GITHUB_REPOSITORY PetrFlajsingr/pf_imgui
         GIT_TAG master
+        OPTIONS "ENABLE_STYLES ON"
 )
+add_compile_definitions(PF_IMGUI_ENABLE_STYLES)
 
 
 #add_compile_definitions(SPDLOG_FMT_EXTERNAL)
