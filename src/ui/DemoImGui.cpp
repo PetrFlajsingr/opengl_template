@@ -62,15 +62,16 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
     }
     checkboxLabel->setText(str);
   });
-  radioGroup = &layout1->createChild<RadioGroup>("radio_group1", "Radio group", std::vector<std::unique_ptr<RadioButton>>{}, std::nullopt, Persistent::Yes);
-  radioGroup->addButton("r_btn1", "First");
-  radioGroup->addButton("r_btn2", "Second");
-  radioGroup->addButton("r_btn3", "Third");
-  radioGroup->addButton("r_btn4", "Fourth");
+  radioGroup = &imguiInterface->createRadioGroup("radio_group1", Persistent::Yes);
+  radioGroup->addButton(layout1->createChild<RadioButton>("r_btn1", "First"));
+  radioGroup->addButton(layout1->createChild<RadioButton>("r_btn2", "Second"));
+  radioGroup->addButton(layout1->createChild<RadioButton>("r_btn3", "Third"));
+  radioGroup->addButton(layout1->createChild<RadioButton>("r_btn4", "Fourth"));
   radioGroupLabel = &layout1->createChild<Text>("label3", "Not selected");
-  radioGroup->addValueListener([this](const auto &value) {
-    radioGroupLabel->setText(std::string{value});
-  });
+  radioGroup->addValueListener([this](RadioButton *value) {
+    radioGroupLabel->setText(std::string{value ? value->getLabel() : "not selected"});
+  },
+                               true);
   tabBar = &layout1->createChild<TabBar>("tabbar_1", true);
   plusTabBtn = &tabBar->addTabButton("plus_tab_btn", "+", TabMod::ForceRight);
   tab1 = &tabBar->addTab("tab_1_1", "Tab 1", TabMod::DisplayDot, true);
