@@ -9,6 +9,13 @@
 #include <toml++/toml.h>
 #include <ui/DemoImGui.h>
 #include <spdlog/spdlog.h>
+#include <argparse/argparse.hpp>
+
+argparse::ArgumentParser createArgParser() {
+  auto parser = argparse::ArgumentParser{"OpenGL template"};
+  parser.add_description("OpenGL template project using pf_ libraries");
+  return parser;
+}
 
 /**
  * Load toml config located next to the exe - config.toml
@@ -38,6 +45,14 @@ void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface, 
 }
 
 int main(int argc, char *argv[]) {
+  auto parser = createArgParser();
+  try {
+    parser.parse_args(argc, argv);
+  } catch(const std::runtime_error &e) {
+    spdlog::error("{}", e.what());
+    fmt::print("{}", parser.help().str());
+    return 1;
+  }
   const auto config = loadConfig();
   const auto resourcesFolder = std::filesystem::path{config["files"]["resources_path"].value<std::string>().value()};
 
