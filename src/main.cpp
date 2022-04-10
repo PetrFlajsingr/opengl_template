@@ -8,6 +8,7 @@
 #include <pf_mainloop/MainLoop.h>
 #include <toml++/toml.h>
 #include <ui/DemoImGui.h>
+#include <spdlog/spdlog.h>
 
 /**
  * Load toml config located next to the exe - config.toml
@@ -16,7 +17,7 @@
 toml::table loadConfig() {
   const auto configPath = pf::getExeFolder() / "config.toml";
   const auto configPathStr = configPath.string();
-  fmt::print("Loading config from: '{}'\n", configPathStr);
+  spdlog::info("Loading config from: '{}'", configPathStr);
   return toml::parse_file(configPathStr);
 }
 
@@ -26,7 +27,7 @@ toml::table loadConfig() {
 void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface, const std::shared_ptr<pf::glfw::Window> &window) {
   const auto configPath = pf::getExeFolder() / "config.toml";
   const auto configPathStr = configPath.string();
-  fmt::print("Saving config file to: '{}'\n", configPathStr);
+  spdlog::info("Saving config file to: '{}'", configPathStr);
   imguiInterface.updateConfig();
   config.insert_or_assign("imgui", imguiInterface.getConfig());
   const auto &[width, height] = window->getSize();
@@ -40,7 +41,7 @@ int main(int argc, char *argv[]) {
   const auto config = loadConfig();
   const auto resourcesFolder = std::filesystem::path{config["files"]["resources_path"].value<std::string>().value()};
 
-  fmt::print("Initializing window and OpenGL\n");
+  spdlog::info("Initializing window and OpenGL");
   pf::glfw::GLFW glfw{};
   auto window = glfw.createWindow({.width = static_cast<std::size_t>(config["window"]["width"].value_or(1200)),
                                    .height = static_cast<std::size_t>(config["window"]["height"].value_or(900)),
@@ -49,7 +50,7 @@ int main(int argc, char *argv[]) {
                                    .minorOpenGLVersion = 6});
   window->setCurrent();
   if (!gladLoadGLLoader((GLADloadproc) glfw.getLoaderFnc())) {
-    fmt::print(stderr, "Error while initializing GLAD");
+    spdlog::error("Error while initializing GLAD");
     return -1;
   }
 
@@ -57,7 +58,7 @@ int main(int argc, char *argv[]) {
 
   pf::ogl::DemoRenderer renderer{resourcesFolder / "shaders"};
   if (const auto initResult = renderer.init(); initResult.has_value()) {
-    fmt::print(stderr, "Error during initialization: {}\n", initResult.value());
+    spdlog::error("Error during initialization: {}", initResult.value());
     return -1;
   }
 
@@ -88,9 +89,9 @@ int main(int argc, char *argv[]) {
     glfw.pollEvents();
   });
 
-  fmt::print("Starting main loop\n");
+  spdlog::info("Starting main loop");
   pf::MainLoop::Get()->run();
-  fmt::print("Main loop ended\n");
+  spdlog::info("Main loop ended");
 
   saveConfig(config, *demoUI.imguiInterface, window);
   return 0;

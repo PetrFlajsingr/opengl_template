@@ -1,24 +1,4 @@
 cmake_minimum_required(VERSION 3.20)
-include("cmake/HunterGate.cmake")
-
-set(CPM_DOWNLOAD_LOCATION "${CMAKE_SOURCE_DIR}/cmake/CPM.cmake")
-set(CPM_DOWNLOAD_VERSION 0.32.2)
-
-message(https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake)
-if (NOT (EXISTS ${CPM_DOWNLOAD_LOCATION} AND CPM_VERSION STREQUAL CPM_DOWNLOAD_VERSION))
-    message(STATUS "Downloading CPM.cmake")
-    file(DOWNLOAD https://github.com/TheLartians/CPM.cmake/releases/download/v${CPM_DOWNLOAD_VERSION}/CPM.cmake ${CPM_DOWNLOAD_LOCATION})
-endif ()
-
-include(${CPM_DOWNLOAD_LOCATION})
-
-
-HunterGate(
-        URL "https://github.com/cpp-pm/hunter/archive/v0.23.321.tar.gz"
-        SHA1 "5e53cbb0429037ea8e2592bfd92704b8ff3ab492"
-)
-
-
 project(opengl_template)
 
 if (MSVC AND CMAKE_CXX_COMPILER_VERSION VERSION_GREATER_EQUAL 19.29.30129 AND CMAKE_VERSION VERSION_GREATER 3.20.3)
@@ -30,7 +10,8 @@ endif ()
 
 add_compile_definitions(GLFW_INCLUDE_NONE)
 add_compile_definitions(GLM_FORCE_SWIZZLE)
-add_compile_definitions(FMT_HEADER_ONLY )
+#add_compile_definitions(FMT_HEADER_ONLY )
+#add_compile_definitions(SPDLOG_FMT_EXTERNAL  )
 
 find_package(OpenGL REQUIRED)
 
@@ -40,39 +21,17 @@ include_directories(include/stb)
 
 find_package(GLFW3 REQUIRED)
 
-CPMAddPackage(
-        NAME pf_common
-        GITHUB_REPOSITORY PetrFlajsingr/pf_common
-        GIT_TAG master
-)
-
-
-CPMAddPackage(
-        NAME pf_mainloop
-        GITHUB_REPOSITORY PetrFlajsingr/pf_mainloop
-        GIT_TAG master
-)
-
-CPMAddPackage(
-        NAME pf_glfw
-        GITHUB_REPOSITORY PetrFlajsingr/pf_glfw
-        GIT_TAG master
-        OPTIONS "PF_GLFW_OPENGL ON"
-)
 add_compile_definitions(PF_GLFW_OPENGL)
 
-CPMAddPackage(
-        NAME pf_imgui
-        GITHUB_REPOSITORY PetrFlajsingr/pf_imgui
-        GIT_TAG master
-        OPTIONS "ENABLE_STYLES ON"
-)
-add_compile_definitions(PF_IMGUI_ENABLE_STYLES)
-
-
-#add_compile_definitions(SPDLOG_FMT_EXTERNAL)
-#hunter_add_package(spdlog)
-#find_package(spdlog CONFIG REQUIRED)
+find_package(pf_common CONFIG REQUIRED)
+find_package(magic_enum CONFIG REQUIRED)
+find_package(glm CONFIG REQUIRED)
+find_package(range-v3 CONFIG REQUIRED)
+find_package(tomlplusplus CONFIG REQUIRED)
+find_package(pf_glfw CONFIG REQUIRED)
+find_package(pf_mainloop CONFIG REQUIRED)
+find_package(pf_imgui CONFIG REQUIRED)
+find_package(spdlog CONFIG REQUIRED)
 
 add_library(glad src/glad.c)
 
@@ -84,9 +43,9 @@ add_executable(opengl_template
         src/utils/files.cpp
         src/ui/DemoImGui.cpp
         src/ui/DemoImGui.h
-        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/ImGuiGlfwOpenGLInterface.cpp
-        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_glfw.cpp
-        ${pf_imgui_SOURCE_DIR}/src/pf_imgui/backends/impl/imgui_impl_opengl3.cpp
+        src/imgui/ImGuiGlfwOpenGLInterface.cpp
+        src/imgui/impl/imgui_impl_glfw.cpp
+        src/imgui/impl/imgui_impl_opengl3.cpp
         src/renderers/DemoRenderer.cpp src/renderers/DemoRenderer.h
         src/renderers/Renderer.h
         src/geGL/Shader.cpp
@@ -94,15 +53,9 @@ add_executable(opengl_template
         ${GEGL_SOURCES})
 
 
-target_link_libraries(opengl_template glad ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui pf_mainloop::pf_mainloop pf_glfw::pf_glfw  #fmt::fmt spdlog::spdlog
+target_link_libraries(opengl_template glad ${OPENGL_LIBRARIES} pf_common::pf_common pf_imgui::pf_imgui pf_mainloop::pf_mainloop pf_glfw::pf_glfw spdlog::spdlog_header_only
         )
 
-if(WIN32)
-    add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy_directory
-            "${PROJECT_SOURCE_DIR}/dlls"
-            $<TARGET_FILE_DIR:${PROJECT_NAME}>)
-endif()
 add_custom_command(TARGET ${PROJECT_NAME} POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy
         "${PROJECT_SOURCE_DIR}/config.toml"
