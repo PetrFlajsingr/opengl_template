@@ -3,7 +3,7 @@
 //
 
 #include "DemoImGui.h"
-#include <pf_imgui/backends/ImGuiGlfwOpenGLInterface.h>
+#include "imgui/ImGuiGlfwOpenGLInterface.h"
 #include <pf_imgui/styles/dark.h>
 #include <pf_mainloop/MainLoop.h>
 
