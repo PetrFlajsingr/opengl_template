@@ -8,7 +8,7 @@
 #include <GLFW/glfw3.h>
 #include <pf_imgui/ImGuiInterface.h>
 #include <pf_imgui/elements.h>
-#include <pf_imgui/layouts/layouts.h>
+#include <pf_imgui/layouts.h>
 #include <toml++/toml.h>
 
 namespace pf::ogl {
@@ -22,7 +22,7 @@ class DemoImGui {
 
   // clang-format off
   ui::ig::Window *window1;
-    ui::ig::BoxLayout *layout1;
+    ui::ig::VerticalLayout *layout1;
       ui::ig::Listbox<std::string> *listBox1;
       ui::ig::Text *listboxLabel;
       ui::ig::Button *button1;

@@ -19,7 +19,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   setDarkStyle(*imguiInterface);
 
   window1 = &imguiInterface->createWindow("demo_window", "Demo window");
-  layout1 = &window1->createChild(BoxLayout::Config{.name = "box_layout_1", .layoutDirection = LayoutDirection::TopToBottom, .size = Size::Auto(), .allowCollapse = AllowCollapse::No, .persistent = Persistent::Yes});
+  layout1 = &window1->createChild(VerticalLayout::Config{.name = "box_layout_1", .size = Size::Auto()});
   listBox1 = &layout1->createChild<Listbox<std::string>>("list_box_1", "Listbox", Size::FillWidth(), std::nullopt, Persistent::Yes);
   listboxLabel = &layout1->createChild<Text>("label1", "No selection");
   listBox1->addItem("item1");
