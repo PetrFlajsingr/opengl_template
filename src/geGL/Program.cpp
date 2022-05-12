@@ -663,6 +663,8 @@ void Program::_fillUniformInfo() {
     glGetActiveUniform(getId(), i, longestUniform, &length, &size, &type, buffer);
     name = _chopIndexingInPropertyName(std::string(buffer));
     location = getUniformLocation(name);
+    int binding;
+    glGetUniformiv(getId(), location, &binding);
     impl->info->uniforms[name] = ProgramInfo::Properties(location, type, name, size);
     //add all variants name[0], name[1], ...
     for (GLint s = 0; s < size; ++s) {
@@ -731,9 +733,9 @@ void Program::_fillBufferInfo() {
 
 void Program::_fillInfo() {
   assert(this != nullptr);
+  _fillBufferInfo();
   _fillUniformInfo();
   _fillAttribInfo();
-  _fillBufferInfo();
 }
 
 std::string Program::_chopIndexingInPropertyName(std::string name) const {

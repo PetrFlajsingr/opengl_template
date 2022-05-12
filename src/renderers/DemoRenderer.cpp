@@ -5,7 +5,9 @@
 #include "DemoRenderer.h"
 #include <utils/files.h>
 
-pf::ogl::DemoRenderer::DemoRenderer(const std::filesystem::path &shaderDir) : shaderDir(shaderDir) {
+#include <utility>
+
+pf::ogl::DemoRenderer::DemoRenderer(std::filesystem::path shaderDir) : shaderDir(std::move(shaderDir)) {
 }
 
 std::optional<std::string> pf::ogl::DemoRenderer::init() {

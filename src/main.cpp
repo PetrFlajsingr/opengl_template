@@ -1,15 +1,15 @@
 #include "renderers/DemoRenderer.h"
 #include "ui/DemoImGui.h"
 #include "utils/files.h"
+#include <argparse/argparse.hpp>
 #include <filesystem>
 #include <fmt/format.h>
 #include <magic_enum.hpp>
 #include <pf_glfw/GLFW.h>
 #include <pf_mainloop/MainLoop.h>
+#include <spdlog/spdlog.h>
 #include <toml++/toml.h>
 #include <ui/DemoImGui.h>
-#include <spdlog/spdlog.h>
-#include <argparse/argparse.hpp>
 
 argparse::ArgumentParser createArgParser() {
   auto parser = argparse::ArgumentParser{"OpenGL template"};
@@ -38,6 +38,9 @@ void saveConfig(toml::table config, pf::ui::ig::ImGuiInterface &imguiInterface, 
   imguiInterface.updateConfig();
   config.insert_or_assign("imgui", imguiInterface.getConfig());
   const auto &[width, height] = window->getSize();
+  if (!config.contains("window")) {
+    config.insert_or_assign("window", toml::table{});
+  }
   config["window"].as_table()->insert_or_assign("width", width);
   config["window"].as_table()->insert_or_assign("height", height);
   auto ofstream = std::ofstream(configPathStr);
@@ -48,7 +51,7 @@ int main(int argc, char *argv[]) {
   auto parser = createArgParser();
   try {
     parser.parse_args(argc, argv);
-  } catch(const std::runtime_error &e) {
+  } catch (const std::runtime_error &e) {
     spdlog::error("{}", e.what());
     fmt::print("{}", parser.help().str());
     return 1;
@@ -87,8 +90,7 @@ int main(int argc, char *argv[]) {
       txt += " with Control";
     }
     demoUI.imguiInterface->getNotificationManager()
-        .createNotification(pf::ui::ig::NotificationType::Info,
-                            pf::ui::ig::uniqueId(),
+        .createNotification(pf::ui::ig::uniqueId(),
                             txt)
         .createChild<pf::ui::ig::Text>(pf::ui::ig::uniqueId(), "Demo notification");
   },

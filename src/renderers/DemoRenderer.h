@@ -29,7 +29,7 @@ inline const unsigned int indices[] = {
 
 class DemoRenderer : public Renderer {
  public:
-  DemoRenderer(const std::filesystem::path &shaderDir);
+  DemoRenderer(std::filesystem::path shaderDir);
 
   std::optional<std::string> init() override;
   void render() override;

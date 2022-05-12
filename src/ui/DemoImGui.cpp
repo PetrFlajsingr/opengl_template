@@ -11,10 +11,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   using namespace ui::ig;
   imguiInterface = std::make_unique<ImGuiGlfwOpenGLInterface>(ImGuiGlfwOpenGLConfig{
       .imgui{.flags = ui::ig::ImGuiConfigFlags::DockingEnable,
-             .config = config,
-             .iconFontDirectory = *config["path_icons"].value<std::string>(),
-             .enabledIconPacks = IconPack::FontAwesome5Regular,
-             .iconSize = 13.f},
+             .config = config},
       .windowHandle = windowHandle});
   setDarkStyle(*imguiInterface);
 
@@ -30,7 +27,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
   });
   button1 = &layout1->createChild<Button>("button1", "Open file");
   button1->addClickListener([this] {
-    imguiInterface->buildFileDialog(FileDialogType::File)
+    imguiInterface->getDialogManager().buildFileDialog(FileDialogType::File)
         .label("Select a file")
         .extension({{"*.txt"}, "text file", Color::White})
         .onSelect([this](const auto &files) {
@@ -38,7 +35,7 @@ pf::ogl::DemoImGui::DemoImGui(const toml::table &config, GLFWwindow *windowHandl
           for (const auto &file : files) {
             str += file.string() + '\n';
           }
-          auto &dialog = imguiInterface->createDialog("dialog1", "Selected Files");
+          auto &dialog = imguiInterface->getDialogManager().createDialog("dialog1", "Selected Files");
           auto &text = dialog.createChild<Text>("dialog_text", "");
           text.setText("Selected files:\n{}", str);
           text.setColor<style::ColorOf::Text>(Color::Blue);
