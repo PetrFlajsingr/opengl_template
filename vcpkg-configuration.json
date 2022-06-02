@@ -3,7 +3,7 @@
     {
       "kind": "git",
       "repository": "https://github.com/PetrFlajsingr/vcpkg-registry",
-      "baseline": "6191a541628adc0416f1ab75fad2c0b319a1f15e",
+      "baseline": "b940a173a91571af73e63d52d20aad316fdc2001",
       "packages": [ "pf-common", "pf-glfw", "pf-mainloop", "pf-imgui" ]
     }
   ]
